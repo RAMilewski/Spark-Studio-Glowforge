@@ -3,15 +3,15 @@
 	-----------------------------------------------------------------------------
 
 	Developed by:			Richard A. Milewski
-	Description:            
+	Description:            Dryer Vent Tubing Adapter for Exaust Fan
    	
 
 	Version:                1.0
 	Creation Date:          
 	Modification Date:      
 	Email:                  richard+scad@milewski.org
-	Copyright 				©2022 by Richard A. Milewski
-    License - CC-BY-NC      https://creativecommons.org/licenses/by-nc/3.0/ 
+	Copyright: 				©2023 by Richard A. Milewski
+    License:                MIT License     
 
 \*#################################################################################*/
 
@@ -30,24 +30,30 @@
 \*#################################################################################*/
 include <BOSL2/std.scad>
 
-module hide_variables () {}  // variables below hidden from Customizer
+side = "room";              //[room, wall]
 
-$fn = 72;
-epsilon = 0.1;
+module hide_variables () {} // variables below hidden from Customizer
 
-pipeDia = 4*inch;
+$fn = 144;
+epsilon = 0.1;              // fix for preview rendering issue
 
-fan = ([119,119,39]);
+vent_dia = 4 * INCH;
+wall = 2;
+
+fan_face = ([119,119,wall]);
+fan_Z = 39;
 fan_port = (114);
-mount_hole = 4;
-mount_centers = 104;
+mount_hole = 4.1;
+mount_centers = [104,104];
 
 /*#################################################################################*\
     
     Main
 
 \*#################################################################################*/
-	
+	if (side == "room") room_side();
+
+    if (side == "wall") wall_side();
 
 
 /*#################################################################################*\
@@ -55,6 +61,33 @@ mount_centers = 104;
     Modules
 
 \*#################################################################################*/
+
+module mount_plate() {
+    difference() {
+        cuboid(fan_face, rounding = 4, edges = "Z", anchor = BOT);
+        union() {
+            down(epsilon/2) cyl(d = fan_port, h = fan_face.z + epsilon, anchor = BOT);
+            grid_copies(spacing = mount_centers)
+                down(epsilon/2) cyl(h = fan_face.z + epsilon, d = mount_hole, anchor = BOT);
+        }
+    }
+}
+
+module room_side() {
+    mount_plate();
+    tube(id1 = fan_port, id2 = vent_dia, wall = wall, h = 10, anchor = BOT);
+    up(10) tube(id1 = vent_dia, id2 = vent_dia - 3, h = 25, wall = wall, anchor = BOT);
+
+}
+
+module wall_side() {
+    mount_plate();
+    tube(id1 = fan_port, id2 = vent_dia, wall = wall, h = 10, anchor = BOT);
+    difference() {
+        up(10) tube(id1 = vent_dia, id2 = vent_dia + 1, h = 10, wall = wall, anchor = BOT);
+        up(15) xcyl(h = fan_face.x, d = mount_hole);
+    }
+}
 
 module echo2(arg) {
 	echo(str("\n\n", arg, "\n\n" ));
