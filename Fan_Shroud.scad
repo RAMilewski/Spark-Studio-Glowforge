@@ -6,9 +6,9 @@
 	Description:            Dryer Vent Tubing Adapter for Exaust Fan
    	
 
-	Version:                1.0
-	Creation Date:          
-	Modification Date:      
+	Version:                1.1
+	Creation Date:          25 Jan 2023
+	Modification Date:      28 Jan 2023
 	Email:                  richard+scad@milewski.org
 	Copyright: 				©2023 by Richard A. Milewski
     License:                MIT License     
@@ -38,12 +38,13 @@ $fn = 144;
 epsilon = 0.1;              // fix for preview rendering issue
 
 vent_dia = 4 * INCH;
+vent_fudge = 3;
 wall = 2;
 
 fan_face = ([119,119,wall]);
 fan_Z = 39;
 fan_port = (114);
-mount_hole = 4.1;
+mount_hole = 4.5;
 mount_centers = [104,104];
 
 /*#################################################################################*\
@@ -84,7 +85,7 @@ module wall_side() {
     mount_plate();
     tube(id1 = fan_port, id2 = vent_dia, wall = wall, h = 10, anchor = BOT);
     difference() {
-        up(10) tube(id1 = vent_dia, id2 = vent_dia + 1, h = 10, wall = wall, anchor = BOT);
+        up(10) tube(id1 = vent_dia, id2 = vent_dia + vent_fudge, h = 10, wall = wall, anchor = BOT);
         up(15) xcyl(h = fan_face.x, d = mount_hole);
     }
 }
