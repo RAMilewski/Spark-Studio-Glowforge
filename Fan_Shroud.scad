@@ -8,7 +8,7 @@
 
 	Version:                1.1
 	Creation Date:          25 Jan 2023
-	Modification Date:      28 Jan 2023
+	Modification Date:      29 Jan 2023
 	Email:                  richard+scad@milewski.org
 	Copyright: 				©2023 by Richard A. Milewski
     License:                MIT License     
@@ -30,15 +30,15 @@
 \*#################################################################################*/
 include <BOSL2/std.scad>
 
-side = "room";              //[room, wall]
+part = "wall";              //[room, wall, plate]
 
 module hide_variables () {} // variables below hidden from Customizer
 
-$fn = 144;
+$fn = 72;
 epsilon = 0.1;              // fix for preview rendering issue
 
 vent_dia = 4 * INCH;
-vent_fudge = 3;
+vent_fudge = 4;
 wall = 2;
 
 fan_face = ([119,119,wall]);
@@ -52,9 +52,11 @@ mount_centers = [104,104];
     Main
 
 \*#################################################################################*/
-	if (side == "room") room_side();
+	if (part == "room") room_part();
 
-    if (side == "wall") wall_side();
+    if (part == "wall") wall_part();
+
+    if (part == "plate") mount_plate();
 
 
 /*#################################################################################*\
@@ -74,18 +76,18 @@ module mount_plate() {
     }
 }
 
-module room_side() {
+module room_part() {
     mount_plate();
     tube(id1 = fan_port, id2 = vent_dia, wall = wall, h = 10, anchor = BOT);
     up(10) tube(id1 = vent_dia, id2 = vent_dia - 3, h = 25, wall = wall, anchor = BOT);
 
 }
 
-module wall_side() {
+module wall_part() {
     mount_plate();
-    tube(id1 = fan_port, id2 = vent_dia, wall = wall, h = 10, anchor = BOT);
+    tube(id1 = fan_port, id2 = vent_dia + vent_fudge, wall = wall, h = 10, anchor = BOT);
     difference() {
-        up(10) tube(id1 = vent_dia, id2 = vent_dia + vent_fudge, h = 10, wall = wall, anchor = BOT);
+        up(10) tube(id= vent_dia + vent_fudge, h = 10, wall = wall, anchor = BOT);
         up(15) xcyl(h = fan_face.x, d = mount_hole);
     }
 }
